@@ -15,7 +15,8 @@ setup(
     package_dir={'':'gpscalc'},
     setup_requires=['wheel'],
     classifiers=[
-        "License :: ",
+        "License :: OSI Approved :: GNU General Public License v3",
+        "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
     ],
     install_requires=requirements,
