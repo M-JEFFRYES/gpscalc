@@ -85,7 +85,7 @@ def calculateGPSvalues(reference_dataset, subject_dataset):
 
     gpsValues = {}
     for key in reference_dataset:
-        gpsValues[key] = __rootMeanSquare(reference_dataset[key], subject_dataset[key])
+        gpsValues[key] = rootMeanSquare(reference_dataset[key], subject_dataset[key])
     
     gps = 0
     gpsL = 0
