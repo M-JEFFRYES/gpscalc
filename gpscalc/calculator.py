@@ -7,6 +7,9 @@ from calculations import __get_dir_filepaths, __blankKinematicsDict, __blankGPSd
 from calculations import calculateGPSvalues
 
 def create_example_kinematicsJSON():
+    """
+    This function produces a json in format required for the GPS calculator, use the same variable headings.  
+    """
 
     kin_vars = [
         'Pelvic Tilt Left','Pelvic Tilt Right', 'Hip Flexion Left','Hip Flexion Right', 
@@ -17,9 +20,10 @@ def create_example_kinematicsJSON():
     KINEMATICS = {}
 
     for var in kin_vars:
-        KINEMATICS[var] = np.sin(np.arange(0,100,1))
+        KINEMATICS[var] = list(np.sin(np.arange(0,100,1)))
     
-    
+    with open('example_kinematics.json', 'w') as fp:
+        json.dump(KINEMATICS, fp)
     return 
 
 def __check_KINEMATICS_dict(KINEMATICS):
