@@ -2,7 +2,7 @@
 
 ## Calculate
 
-from gpscalc.calculator import GPSData
+from gpscalculator import GPSData
 
 subpath = "path to subject kinematics json"
 refdir = "path to directory of referecne kinematics jsons"
@@ -18,16 +18,15 @@ outputdir = "path to directory where the plot is to be saved"
 
 GPS.plot_data(subjname, outputdir)
 
-
 ## Check required json structure for kinematics
 
-from gpscalc.calculator import create_example_kinematicsJSON
+from gpscalculator import create_example_kinematicsJSON
 
 # Creates a json file in the correct format locally
 create_example_kinematicsJSON()
 
 ## Check the kinematics variable labels used
-from gpscalc.calculator import check_variable_names
+from gpscalculator import check_variable_names
 
 # Prints the kinematic variable labeles used and returns a list of them
 check_variable_names()
