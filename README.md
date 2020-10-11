@@ -9,26 +9,23 @@ refdir = "path to directory of referecne kinematics jsons"
 
 GPS = GPSData(subpath, refdir)
 
-'''python # Print GPS data for subject relative to the reference group '''
+### Print GPS data for subject relative to the reference group 
 print(GPS.GPS_SCORE)
 
-# Plot and save the Movement Analysis Profile
+### Plot and save the Movement Analysis Profile
 subjname = "name or reference for the subject"
 outputdir = "path to directory where the plot is to be saved"
 
-''''python GPS.plot_data(subjname, outputdir) '''
+GPS.plot_data(subjname, outputdir) 
 
 ## Check required json structure for kinematics
-'''python
 from gpscalculator import create_example_kinematicsJSON
 
 Creates a json file in the correct format locally
 create_example_kinematicsJSON()
-'''
+
 ## Check the kinematics variable labels used
-'''python
 from gpscalculator import check_variable_names
 
-# Prints the kinematic variable labeles used and returns a list of them
+### Prints the kinematic variable labeles used and returns a list of them
 check_variable_names()
-'''
