@@ -1,5 +1,8 @@
 from setuptools import setup
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='gpscalc-mjeffryes',
     author='Michael Jeffryes',
@@ -11,4 +14,10 @@ setup(
     py_modules=["calculator", 'calculations'],
     package_dir={'':'gpscalc'},
     setup_requires=['wheel'],
+    classifiers=[
+        "License :: ",
+        "Programming Language :: Python :: 3",
+    ],
+    install_requires=requirements,
+    long_description=open('README.md').read(),
 )

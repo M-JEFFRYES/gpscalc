@@ -3,8 +3,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from calculations import __get_dir_filepaths, __blankKinematicsDict, __blankGPSdict
+from calculations import get_dir_filepaths, blankKinematicsDict, blankGPSdict
 from calculations import calculateGPSvalues
+
+def check_variable_names():
+    kin_vars = [
+        'Pelvic Tilt Left','Pelvic Tilt Right', 'Hip Flexion Left','Hip Flexion Right', 
+        'Knee Flexion Left','Knee Flexion Right', 'Ankle Dorsiflexion Left','Ankle Dorsiflexion Right', 
+        'Pelvic Obliquity Left','Pelvic Obliquity Right','Hip Abduction Left','Hip Abduction Right','Pelvic Rotation Left', 
+        'Pelvic Rotation Right','Hip Rotation Left','Hip Rotation Right','Foot Progression Left','Foot Progression Right']
+
+    for var in kin_vars:
+        print(var)
+    return kin_vars
+
 
 def create_example_kinematicsJSON():
     """
@@ -96,9 +108,9 @@ def group_average_kinematics(directorypath):
         Returns:
             AVG_KINEMATICS(dictionary): Dictionary containing the average values for each datapoint of the kinematic variables
     """
-    directorypaths = __get_dir_filepaths(directorypath)
+    directorypaths = get_dir_filepaths(directorypath)
 
-    AVG_KINEMATICS = __blankKinematicsDict()
+    AVG_KINEMATICS = blankKinematicsDict()
 
     # Cycle through files in reference directory folder
     for filepath in directorypaths:
@@ -125,9 +137,9 @@ def group_kinematics_stdev(directorypath, AVG_KINEMATICS):
             REF_GPS(dictionary): Dictionary containing the average standard deviation of the kinematic variables 
     """
 
-    directorypaths = __get_dir_filepaths(directorypath)
+    directorypaths = get_dir_filepaths(directorypath)
 
-    STDEV_GPS = __blankGPSdict()
+    STDEV_GPS = blankGPSdict()
 
     # Cycle through list of reference file paths
     for path in directorypaths:
@@ -140,6 +152,7 @@ def group_kinematics_stdev(directorypath, AVG_KINEMATICS):
         for key in gpsValues:
             tot_gps_val = STDEV_GPS[key]+gpsValues[key]
             STDEV_GPS[key] = tot_gps_val
+    
     # average stdevGPS
     for key, value in gpsValues.items():
         STDEV_GPS[key] = (value/len(directorypaths))
@@ -237,12 +250,19 @@ def plot_GPS(sub_name, SUB_GPS, REF_GPS, output_directory):
 class GPSData:
 
     def __init__(self,subjectpath, directorypath):
+        """
+        The directory path is used to collect the kinemtatics from the reference group, subject and calculate the GPS.
+        """
         self.subjectpath = subjectpath
         self.directorypath = directorypath
 
         self.get_subject_gps()
 
     def get_subject_gps(self):
+        """
+        This function calculates the average kinematics of the reference group, the average standard deviation of the reference group relative to the average kinematics.
+        The GPS score for the subject is calculated
+        """
 
         self.AVG_KINEMATICS = group_average_kinematics(self.directorypath)
 
@@ -251,11 +271,13 @@ class GPSData:
         self.GPS_SCORE = calculate_GPS(self.subjectpath, self.AVG_KINEMATICS)
 
     def plot_data(self, subjectname, outputdirectory):
-
+        """
+        The subjects GPS and MAP is plotted against the average of the reference group
+        """
         plot_GPS(subjectname, self.GPS_SCORE, self.REF_GPS, outputdirectory)
 
-class GPSDataBatch:
+#class GPSDataBatch:
 
-    def __init__(self,subjectpathlist, directorypath):
-        return
+ #   def __init__(self,subjectpathlist, directorypath):
+  #      return
         

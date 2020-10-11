@@ -1,6 +1,6 @@
 import os
 
-def __get_dir_filepaths(directorypath):
+def get_dir_filepaths(directorypath):
     """
     This function appends the absolute file paths from within a directory.
 
@@ -18,7 +18,7 @@ def __get_dir_filepaths(directorypath):
     return dirpaths
 
 
-def __blankKinematicsDict():
+def blankKinematicsDict():
     """ Returns a dictionary template for the kinematic variables, with 100 samples. """
 
     blankKINS = {
@@ -43,7 +43,7 @@ def __blankKinematicsDict():
         }
     return blankKINS
 
-def __blankGPSdict():
+def blankGPSdict():
     blankGPS = {
             'Pelvic Tilt Left': 0, 
             'Pelvic Tilt Right': 0, 
@@ -69,7 +69,7 @@ def __blankGPSdict():
         }
     return blankGPS
 
-def __rootMeanSquare(reference, subject):
+def rootMeanSquare(reference, subject):
     """ Calculates the root mean square of two list. """
 
     sumSquares = 0
