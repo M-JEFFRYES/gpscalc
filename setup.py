@@ -4,11 +4,11 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name='gpscalc-mjeffryes',
+    name='gait-profile-score',
     author='Michael Jeffryes',
     author_email='mike.jeffryes@hotmail.com',
-    url='https://pypi.org/project/gpscalc-mjeffryes/#description',
-    version='0.0.5',
+    url='',
+    version='0.0.1',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
     py_modules=["gpscalculator","calculations"],
