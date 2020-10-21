@@ -377,12 +377,24 @@ class GPSData:
         """
         plot_GPS(subjectname, self.GPS_SCORE, self.REF_GPS, outputdirectory)
 
+    def GPSData_to_JSON(self, subjectname, outputdirectory):
+
+        self.GPS_SCORE["Subject_path"] = self.subjectpath
+        self.GPS_SCORE["Subject_name"] = subjectname
+
+        with open("{}\\{}_GPS.json".format(outputdirectory, subjectname), 'w') as f:
+            json.dump(self.GPS_SCORE, f)
+        return
+
+
 class GPSDataBatch:
 
-    def __init__(self,subjectdirectorypath, referencedirectorypath):
+    def __init__(self,subjectdirectorypath, referencedirectorypath, outputdirectory, subjectgroup="Subjects"):
 
         self.subjectDIR = subjectdirectorypath
         self.referenceDIR = referencedirectorypath
+        self.outputdirectory = outputdirectory
+        self.subjectgroup = subjectgroup
 
         self.subjectPATHS = get_dir_filepaths(self.subjectDIR)
 
@@ -404,7 +416,7 @@ class GPSDataBatch:
     
     def calculate_subject_group_GPS(self):
 
-        cols = ['Subject_path','Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left',  'Hip Abduction Right', 
+        cols = ['Subject_path','Subject', 'Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left',  'Hip Abduction Right', 
             'Pelvic Rotation Left', 'Pelvic Rotation Right', 'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 'Foot Progression Right', 'GPS','GPS Left', 'GPS Right']
 
         self.GPS_batch = pd.DataFrame(data=None, columns=cols)
@@ -414,11 +426,18 @@ class GPSDataBatch:
             gps_data = calculate_GPS(subjectPATH, self.AVG_KINEMATICS)
 
             gps_data["Subject_path"] = subjectPATH
+            gps_data["Subject"] = (subjectPATH.split("\\")[-1]).split(".")[0]
 
             self.GPS_batch = self.GPS_batch.append(gps_data, ignore_index=True)
-
         return
-        
+    
+    def save_batch_data(self):
+        """
+        This method saves the 
+        """
+
+        self.GPS_batch.to_csv("{}\\{}_GPS_Data.csv".format(self.outputdirectory, self.subjectgroup), index=False)
+        return
 
 
         
