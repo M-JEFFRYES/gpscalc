@@ -11,7 +11,7 @@ setup(
     version='0.0.1',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
-    py_modules=["gpscalculator","calculations"],
+    py_modules=["gpscalculator",],
     package_dir={'':'gpscalc'},
     setup_requires=['wheel'],
     classifiers=[
@@ -22,3 +22,4 @@ setup(
     install_requires=requirements,
     long_description=open('README.md').read(),
 )
+

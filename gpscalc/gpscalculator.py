@@ -2,9 +2,111 @@ import json
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-from calculations import get_dir_filepaths, blankKinematicsDict, blankGPSdict
-from calculations import calculateGPSvalues
+def get_dir_filepaths(directorypath):
+    """
+    This function appends the absolute file paths from within a directory.
+
+        Args:
+            directorypath(string): Path to the directory
+        Returns:
+            dirpaths(list): List of file paths from within the directory 
+    """
+
+    paths = os.listdir(directorypath)
+    dirpaths = []
+
+    for path in paths:
+        dirpaths.append("{}\\{}".format(directorypath, path))
+    return dirpaths
+
+def blankKinematicsDict():
+    """ Returns a dictionary template for the kinematic variables, with 100 samples. """
+
+    blankKINS = {
+            'Pelvic Tilt Left': [0]*100, 
+            'Pelvic Tilt Right': [0]*100, 
+            'Hip Flexion Left': [0]*100, 
+            'Hip Flexion Right': [0]*100, 
+            'Knee Flexion Left': [0]*100, 
+            'Knee Flexion Right': [0]*100, 
+            'Ankle Dorsiflexion Left': [0]*100, 
+            'Ankle Dorsiflexion Right': [0]*100, 
+            'Pelvic Obliquity Left': [0]*100, 
+            'Pelvic Obliquity Right': [0]*100, 
+            'Hip Abduction Left': [0]*100, 
+            'Hip Abduction Right': [0]*100, 
+            'Pelvic Rotation Left': [0]*100, 
+            'Pelvic Rotation Right': [0]*100, 
+            'Hip Rotation Left': [0]*100, 
+            'Hip Rotation Right': [0]*100, 
+            'Foot Progression Left': [0]*100, 
+            'Foot Progression Right': [0]*100
+        }
+    return blankKINS
+
+def blankGPSdict():
+    blankGPS = {
+            'Pelvic Tilt Left': 0, 
+            'Pelvic Tilt Right': 0, 
+            'Hip Flexion Left': 0, 
+            'Hip Flexion Right': 0, 
+            'Knee Flexion Left': 0, 
+            'Knee Flexion Right': 0, 
+            'Ankle Dorsiflexion Left': 0, 
+            'Ankle Dorsiflexion Right': 0, 
+            'Pelvic Obliquity Left': 0, 
+            'Pelvic Obliquity Right': 0, 
+            'Hip Abduction Left': 0, 
+            'Hip Abduction Right': 0, 
+            'Pelvic Rotation Left': 0, 
+            'Pelvic Rotation Right': 0, 
+            'Hip Rotation Left': 0, 
+            'Hip Rotation Right': 0, 
+            'Foot Progression Left': 0, 
+            'Foot Progression Right': 0,
+            'GPS': 0,
+            'GPS Left': 0,
+            'GPS Right': 0
+        }
+    return blankGPS
+
+def rootMeanSquare(reference, subject):
+    """ Calculates the root mean square of two list. """
+
+    sumSquares = 0
+    for i in range(len(reference)):
+        sumSquares += (reference[i]-subject[i])**2
+    
+    rmsVal = (sumSquares/len(reference))**0.5
+    return rmsVal
+
+def calculateGPSvalues(reference_dataset, subject_dataset):
+    """ Calculates the GPS and MAP of a subjects kinematics relative to a reference kinematics. """
+
+    gpsValues = {}
+    for key in reference_dataset:
+        gpsValues[key] = rootMeanSquare(reference_dataset[key], subject_dataset[key])
+    
+    gps = 0
+    gpsL = 0
+    gpsR = 0
+
+    for key in gpsValues:
+        gps +=  gpsValues[key]
+
+        if "Left" in key:
+            gpsL +=  gpsValues[key]
+        elif "Right" in key:
+            gpsR +=  gpsValues[key]
+        else:
+            pass
+    
+    gpsValues["GPS"] = gps/len(reference_dataset)
+    gpsValues["GPS Left"] = gpsL/(len(reference_dataset)/2)
+    gpsValues["GPS Right"] = gpsR/(len(reference_dataset)/2)
+    return gpsValues
 
 def check_variable_names():
     kin_vars = [
@@ -16,7 +118,6 @@ def check_variable_names():
     for var in kin_vars:
         print(var)
     return kin_vars
-
 
 def create_example_kinematicsJSON():
     """
@@ -276,8 +377,48 @@ class GPSData:
         """
         plot_GPS(subjectname, self.GPS_SCORE, self.REF_GPS, outputdirectory)
 
-#class GPSDataBatch:
+class GPSDataBatch:
 
- #   def __init__(self,subjectpathlist, directorypath):
-  #      return
+    def __init__(self,subjectdirectorypath, referencedirectorypath):
+
+        self.subjectDIR = subjectdirectorypath
+        self.referenceDIR = referencedirectorypath
+
+        self.subjectPATHS = get_dir_filepaths(self.subjectDIR)
+
+        # Calculate the average kinematics and the standard deviation of the reference group relative to the average kinematics
+        self.process_reference_group()
+
+        self.calculate_subject_group_GPS()
+
+        return
+
+    def process_reference_group(self):
+        """
+        This method calculates the average kinematics of the reference group and the standard deviation of the reference group relative to the average kinematics
+        """
+        self.AVG_KINEMATICS = group_average_kinematics(self.referenceDIR)
+
+        self.REF_GPS = group_kinematics_stdev(self.referenceDIR, self.AVG_KINEMATICS)
+        return
+    
+    def calculate_subject_group_GPS(self):
+
+        cols = ['Subject_path','Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left',  'Hip Abduction Right', 
+            'Pelvic Rotation Left', 'Pelvic Rotation Right', 'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 'Foot Progression Right', 'GPS','GPS Left', 'GPS Right']
+
+        self.GPS_batch = pd.DataFrame(data=None, columns=cols)
+
+        for i, subjectPATH in enumerate(self.subjectPATHS):
+
+            gps_data = calculate_GPS(subjectPATH, self.AVG_KINEMATICS)
+
+            gps_data["Subject_path"] = subjectPATH
+
+            self.GPS_batch = self.GPS_batch.append(gps_data, ignore_index=True)
+
+        return
+        
+
+
         
