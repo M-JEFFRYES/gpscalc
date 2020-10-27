@@ -17,6 +17,7 @@ pip install gait-profile-score
 from gpscalculator import create_example_kinematicsJSON, check_variable_names
 
 create_example_kinematicsJSON()
+
 check_variable_names()
 
 
@@ -25,6 +26,7 @@ check_variable_names()
 from gpscalculator import GPSData
 
 subpath = "path to subject kinematics json"
+
 refdir = "path to directory of referecne kinematics jsons"
 
 GPS = GPSData(subpath, refdir)
@@ -34,6 +36,7 @@ print(GPS.GPS_SCORE)
 
 ### Plot and save the Movement Analysis Profile
 subjname = "name or reference for the subject"
+
 outputdir = "path to directory where the plot is to be saved"
 
 GPS.plot_data(subjname, outputdir) 
@@ -43,8 +46,11 @@ GPS.plot_data(subjname, outputdir)
 from gpscalculator import GPSDataBatch
 
 subdir = "path to directory contain the subject groups kinematics json files"
+
 refdir = "path to directory of referecne kinematics jsons"
+
 subjgroup = "name or reference for the subject group"
+
 outputDIR = "path to directory where the subject groups GPS data is to be saved"
 
 SubjectGroup_GPS = GPSDataBatch(subDIR, refDIR, outputDIR, subjectgroup)
