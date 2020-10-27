@@ -4,6 +4,14 @@ gpscalc is a package that can be used to calculate the gait profile score as sta
 
 (Baker, R. et al., 2009. The Gait Profile Score and Movement Analysis Profile. Gait and Posture, 30(1), pp. 265-269.)
 
+Kinematic gait data has to be in a specific format for the calculation, the specifics of the format required can be seen using the functions below to create example JSON files. 
+
+# Using gpscalculator
+
+## Installation
+
+pip install gait-profile-score
+
 ## Check the json format required for the gait trial kinematics
 
 from gpscalculator import create_example_kinematicsJSON, check_variable_names
@@ -30,14 +38,13 @@ outputdir = "path to directory where the plot is to be saved"
 
 GPS.plot_data(subjname, outputdir) 
 
-## Check required json structure for kinematics
-from gpscalculator import create_example_kinematicsJSON
+## Calculate the GPS for a group of subjects
 
-Creates a json file in the correct format locally
-create_example_kinematicsJSON()
+from gpscalculator import GPSDataBatch
 
-## Check the kinematics variable labels used
-from gpscalculator import check_variable_names
+subdir = "path to directory contain the subject groups kinematics json files"
+refdir = "path to directory of referecne kinematics jsons"
+subjgroup = "name or reference for the subject group"
+outputDIR = "path to directory where the subject groups GPS data is to be saved"
 
-### Prints the kinematic variable labeles used and returns a list of them
-check_variable_names()
+SubjectGroup_GPS = GPSDataBatch(subDIR, refDIR, outputDIR, subjectgroup)

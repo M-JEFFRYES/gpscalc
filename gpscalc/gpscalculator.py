@@ -109,6 +109,9 @@ def calculateGPSvalues(reference_dataset, subject_dataset):
     return gpsValues
 
 def check_variable_names():
+    """
+    This function prints the required kinematic variable names.  
+    """
     kin_vars = [
         'Pelvic Tilt Left','Pelvic Tilt Right', 'Hip Flexion Left','Hip Flexion Right', 
         'Knee Flexion Left','Knee Flexion Right', 'Ankle Dorsiflexion Left','Ankle Dorsiflexion Right', 
@@ -292,7 +295,7 @@ def plot_GPS(sub_name, SUB_GPS, REF_GPS, output_directory):
     """
     This function plots the GPS and MAP for the subject relative to the reference group.
 
-        Args:
+        Arguments:
             sub_name(string): Name of the subject (or subject reference)
             SUB_GPS(dictionary): The dictionary containing the subjects GPS values
             REF_GPS(dictionary): The dictionary containing the standard deviation of the GPS values of the reference group
@@ -349,13 +352,19 @@ def plot_GPS(sub_name, SUB_GPS, REF_GPS, output_directory):
     return
 
 class GPSData:
+    """
+    This class calculates the GPS score for a subject trial relative to a reference group.
+    """
 
-    def __init__(self,subjectpath, directorypath):
+    def __init__(self,subjectPATH, directoryPATH):
         """
         The directory path is used to collect the kinemtatics from the reference group, subject and calculate the GPS.
+            Arguments:
+                subjectPATH(String): Path to the subject trial kinematics file 
+                directoryPATH(String): path to the directory storing the reference group trial kinematics files
         """
-        self.subjectpath = subjectpath
-        self.directorypath = directorypath
+        self.subjectpath = subjectPATH
+        self.directorypath = directoryPATH
 
         self.get_subject_gps()
 
@@ -373,11 +382,26 @@ class GPSData:
 
     def plot_data(self, subjectname, outputdirectory):
         """
-        The subjects GPS and MAP is plotted against the average of the reference group
+        The subjects GPS and MAP is plotted against the average of the reference group.
+            Arguments:
+                subjectname(String): Name of the subject
+                outputdirectory(String): Path to the directory where the MAP plot is to be saved
+
+            Returns:
+                None
         """
         plot_GPS(subjectname, self.GPS_SCORE, self.REF_GPS, outputdirectory)
 
     def GPSData_to_JSON(self, subjectname, outputdirectory):
+        """
+        The GPS data calculated using the subject trial is saved to a JSON file.
+            Arguments:
+                subjectname(String): Name of the subject
+                outputdirectory(String): Path to the directory where the MAP plot is to be saved
+
+            Returns:
+                None
+        """
 
         self.GPS_SCORE["Subject_path"] = self.subjectpath
         self.GPS_SCORE["Subject_name"] = subjectname
@@ -388,8 +412,19 @@ class GPSData:
 
 
 class GPSDataBatch:
-
+    """
+    This class calculates the GPS scores for a group of subjects relative to a reference group.
+    A data frame with the results is saved to a csv file names using the subject group and output directory specified
+    """
     def __init__(self,subjectdirectorypath, referencedirectorypath, outputdirectory, subjectgroup="Subjects"):
+        """
+        The directory path is used to collect the kinemtatics from the reference group, subject and calculate the GPS.
+            Arguments:
+                subjectdirecctorypath(String): Path to the directory containing the subject trial kinematics files 
+                referencedirectorypath(String): Path to the directory storing the reference group trial kinematics files
+                outputdirectory(String): Path to the directory where the subject groups GPS data is to be saved
+                subjectgroup(String)(optional): Name of the subject group used
+        """
 
         self.subjectDIR = subjectdirectorypath
         self.referenceDIR = referencedirectorypath
@@ -401,7 +436,11 @@ class GPSDataBatch:
         # Calculate the average kinematics and the standard deviation of the reference group relative to the average kinematics
         self.process_reference_group()
 
+        # Calculate the GPS data for each subject
         self.calculate_subject_group_GPS()
+
+        # Save the subject groups GPS data to a csv file
+        self.save_batch_data()
 
         return
 
@@ -415,6 +454,9 @@ class GPSDataBatch:
         return
     
     def calculate_subject_group_GPS(self):
+        """
+        This method calculate the GPS for each subject trial in the subject group.
+        """
 
         cols = ['Subject_path','Subject', 'Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left',  'Hip Abduction Right', 
             'Pelvic Rotation Left', 'Pelvic Rotation Right', 'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 'Foot Progression Right', 'GPS','GPS Left', 'GPS Right']
@@ -433,7 +475,7 @@ class GPSDataBatch:
     
     def save_batch_data(self):
         """
-        This method saves the 
+        This method saves the subject groups GPS data to a CSV file.
         """
 
         self.GPS_batch.to_csv("{}\\{}_GPS_Data.csv".format(self.outputdirectory, self.subjectgroup), index=False)
