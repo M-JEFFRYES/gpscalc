@@ -286,29 +286,33 @@ class batchGPS:
 
 ##################
 
-
 def test():
 
     refpath = "..\\tests\\exampledata\\reference"
-
     refkinematics = []
     for filename in os.listdir(refpath):
         if ".json" in filename:
             refkinematics.append(os.path.join(refpath, filename))
+    
+    subpath = "..\\tests\\exampledata\\subject"
+    subkinematics = []
+    for filename in os.listdir(subpath):
+        if ".json" in filename:
+            subkinematics.append(os.path.join(subpath, filename))
 
     x = refernceGroup()
     x.processGroupData(refkinematics)
 
-    with open(refkinematics[0],'rb') as f:
+    with open(subkinematics[0],'rb') as f:
         subKins = json.load(f)
 
     sub = calculateGPS(x.avgKinematics,subKins).gps
 
-    p = plotGPS(x.avgRefGPS, sub, subjectname="test", saveplot="test_gps.png")
+    p = plotGPS(x.avgRefGPS, sub, subjectname="test", saveplot="..\\tests\\testplots\\test_gps.png")
 
     b = batchGPS()
     b.loadReferenceGroup(refkinematics)
-    b.processSubjectGroup(refkinematics)
+    b.processSubjectGroup(subkinematics)
 
     return
 
