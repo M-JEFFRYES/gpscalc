@@ -12,45 +12,40 @@ Kinematic gait data has to be in a specific format for the calculation, the spec
 
 pip install gait-profile-score
 
-## Check the json format required for the gait trial kinematics
 
-from gpscalculator import create_example_kinematicsJSON, check_variable_names
+## Process reference group data
+from gpscalculator import referenceGroup
 
-create_example_kinematicsJSON()
+refPaths = "List of paths to the reference group kinematics JSON files
 
-check_variable_names()
+referenceData = refernceGroupKinematics()
+referenceData.processGroupData(refkinematics)
+
+referenceKinematics = referenceData.avgKinematics
+referenceGPS = referenceData.avgRefGPS
+
+## Calculate the GPS of a single subject
+from gpscalculator import calculateGPS
+
+subjectKinematics = "dictionary of the kinematic data"
+
+subjectGPS = calculateGPS(referenceKinematics, subjectKinematics).gps
+
+## Plot and save the GPS figure
+
+from gpscalculator import plotGPS
+
+plot = pltoGPS(referenceGPS, subjectGPS, saveplot="test_gps_plot.png") 
 
 
-## Calculate GPS
+## Batch process a subject group
 
-from gpscalculator import GPSData
+from gpscalculator import batchGPS
 
-subpath = "path to subject kinematics json"
+groupPaths = "List of paths to the subject group kinematics JSON files
 
-refdir = "path to directory of referecne kinematics jsons"
+subjectGroup = batchGPS()
+subjectGroup.loadReferenceGroup(refPaths)
+subjectGroup.processSubjectGroup()
 
-GPS = GPSData(subpath, refdir)
-
-### Print GPS data for subject relative to the reference group 
-print(GPS.GPS_SCORE)
-
-### Plot and save the Movement Analysis Profile
-subjname = "name or reference for the subject"
-
-outputdir = "path to directory where the plot is to be saved"
-
-GPS.plot_data(subjname, outputdir) 
-
-## Calculate the GPS for a group of subjects
-
-from gpscalculator import GPSDataBatch
-
-subdir = "path to directory contain the subject groups kinematics json files"
-
-refdir = "path to directory of referecne kinematics jsons"
-
-subjgroup = "name or reference for the subject group"
-
-outputDIR = "path to directory where the subject groups GPS data is to be saved"
-
-SubjectGroup_GPS = GPSDataBatch(subDIR, refDIR, outputDIR, subjectgroup)
+print(subjectGroup.batchData) # prints the dataframe containing the subject group GPS data
