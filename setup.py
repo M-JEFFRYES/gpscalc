@@ -3,6 +3,10 @@ from setuptools import setup
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
+def readme():
+    with open("docs/source/index.rst") as f:
+        return f.read()
+
 setup(
     name='gait-profile-score',
     author='Michael Jeffryes',
@@ -21,7 +25,7 @@ setup(
     ],
     #test_suite='tests'
     install_requires=requirements,
-    long_description=open('README.md').read(),
+    long_description=readme(),#open('README.md').read(),
 )
 
 # python setupy.py sdist bdist_wheel
