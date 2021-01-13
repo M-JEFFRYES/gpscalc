@@ -1,71 +1,119 @@
-from gpscalculator import load_kinematic_data, group_average_kinematics, group_kinematics_stdev
-from gpscalculator import calculate_GPS, plot_GPS
-from gpscalculator import GPSData
-from calculations import get_dir_filepaths
+import sys, os
+testdir = os.path.dirname(__file__)
+srcdir = '../gpscalc'
+sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
+
+from gpscalculator import loadKinematicsJSON, calculateGPS, refernceGroup, plotGPS, batchGPS
+from unittest_config import referenceDataDirectory, subjectDataDirectory
 
 import unittest
 
-class gpsCalcTest(unittest.TestCase):
-
+class loadKinematicsJSONTest(unittest.TestCase):
     def setUp(self):
-        self._refdirpath = "exampledata\\reference"
-        self._subdirpath = "exampledata\\subject"
+        self.refdirpath = referenceDataDirectory
+        self.refpaths = []
 
-        self._reffilepaths = get_dir_filepaths(self._refdirpath)
-        self._subfilepaths = get_dir_filepaths(self._subdirpath)
-
-    def test_load_kinematic_data(self):
-
-        kinematic_data = load_kinematic_data(self._reffilepaths[0])
-
-    def test_group_average_stdev(self):
+        for path in os.listdir(self.refdirpath):
+            self.refpaths.append(os.path.join(self.refdirpath, path))
         
-        _AVG_KINEMATICS = group_average_kinematics(self._refdirpath)
+    def test_loadKinematicsJSON(self):
+        self.__kinematics = loadKinematicsJSON(self.refpaths[0])
 
-    def test_group_kinematics_stdev(self):
-        
-        __AVG_KINEMATICS = group_average_kinematics(self._refdirpath)
-
-        __STDEV_GPS = group_kinematics_stdev(self._refdirpath, __AVG_KINEMATICS)
-
-    def test_calculate_GPS(self):
-
-        __AVG_KINEMATICS = group_average_kinematics(self._refdirpath)
-
-        __SUB_GPS = calculate_GPS(self._subfilepaths[0], __AVG_KINEMATICS)
-
-    def test_plot_GPS(self):
-        
-        __AVG_KINEMATICS = group_average_kinematics(self._refdirpath)
-
-        __SUB_GPS = calculate_GPS(self._subfilepaths[0], __AVG_KINEMATICS)
-
-        __STDEV_GPS = group_kinematics_stdev(self._refdirpath, __AVG_KINEMATICS)
-
-        plot_GPS("Testing", __SUB_GPS, __STDEV_GPS, "testplots")
-
-
-class GPSDataTest(unittest.TestCase):
-
+class calculateGPSTest(unittest.TestCase):
     def setUp(self):
+        self.referenceArray = [5]*101 
+        self.subjectArray = [10]*101
         
-        self._refdirpath = "exampledata\\reference"
-        self._subdirpath = "exampledata\\subject"
+        self.referenceKinematics = {}
+        self.subjectKinematics = {}
 
-        self._reffilepaths = get_dir_filepaths(self._refdirpath)
-        self._subfilepaths = get_dir_filepaths(self._subdirpath)
+        self.variables = ['Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 
+        'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 
+        'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 
+        'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left', 
+        'Hip Abduction Right', 'Pelvic Rotation Left', 'Pelvic Rotation Right', 
+        'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 
+        'Foot Progression Right']
+
+        for key in self.variables:
+            self.referenceKinematics[key] = self.referenceArray 
+            self.subjectKinematics[key] = self.subjectArray 
+
+    def test_calculateGPS(self):
+        self.__calculator = calculateGPS(self.referenceKinematics, self.subjectKinematics)
+        self.assertEqual(self.__calculator.gps[self.variables[0]], 5)
+        self.assertEqual(self.__calculator.gps["GPS"], 5)
+        self.assertEqual(self.__calculator.gps["GPS Left"], 5)
+        self.assertEqual(self.__calculator.gps["GPS Right"], 5)
     
-    def test_Calculator(self):
-
-        GPS_data = GPSData(self._subfilepaths[0], self._refdirpath)
+    def test_RMS(self):
+        self.__calculator = calculateGPS(self.referenceKinematics, self.subjectKinematics)
+        self.__RMS = self.__calculator.RMS([10]*20, [20]*20)
+        self.assertEqual(self.__RMS, 10)
     
-    def test_plot_data(self):
-        
-        GPS_data = GPSData(self._subfilepaths[0], self._refdirpath)
+class referenceGroupTest(unittest.TestCase):
+    def setUp(self):
+        self.refdirpath = referenceDataDirectory
 
-        GPS_data.plot_data("unittest", "testplots")
+        self.refpaths = []
+        for path in os.listdir(self.refdirpath):
+            self.refpaths.append(os.path.join(self.refdirpath, path))
 
+    def test_referenceGroup(self):
+        self.__referenceGroup = refernceGroup()
+        self.__referenceGroup.processGroupData(self.refpaths)
 
+        self.assertAlmostEqual(self.__referenceGroup.avgRefGPS["GPS"], 0.55,)
+        self.assertAlmostEqual(self.__referenceGroup.avgKinematics["Pelvic Tilt Left"][0], 5.075)
+
+class plotGPSTest(unittest.TestCase):
+    def setUp(self):
+        self.refdirpath = referenceDataDirectory
+        self.subdirpath = subjectDataDirectory
+
+        self.refpaths = []
+        for path in os.listdir(self.refdirpath):
+            self.refpaths.append(os.path.join(self.refdirpath, path))
+
+        self.subpaths = []
+        for path in os.listdir(self.subdirpath):
+            self.subpaths.append(os.path.join(self.subdirpath, path))
+
+        self.referenceGroup = refernceGroup()
+        self.referenceGroup.processGroupData(self.refpaths)
+        self.__referenceGPS = self.referenceGroup.avgRefGPS
+
+        self.subjectKinematics = loadKinematicsJSON(self.subpaths[0])
+        self.__subjectGPS = calculateGPS(self.referenceGroup.avgKinematics, self.subjectKinematics).gps
+
+    def test_plotGPS(self):
+        self.__plot = plotGPS(self.__referenceGPS, self.__subjectGPS, saveplot="tests\\testplots\\unittest_gps_plot.png") 
+        return
     
+class batchGPSTest(unittest.TestCase):
+    def setUp(self):
+        self.refdirpath = referenceDataDirectory
+        self.subdirpath = subjectDataDirectory
+
+        self.refpaths = []
+        for path in os.listdir(self.refdirpath):
+            self.refpaths.append(os.path.join(self.refdirpath, path))
+
+        self.subpaths = []
+        for path in os.listdir(self.subdirpath):
+            self.subpaths.append(os.path.join(self.subdirpath, path))
+    
+    def test_batchGPS(self):
+        self.__subjectGroup = batchGPS()
+        self.__subjectGroup.loadReferenceGroup(self.refpaths)
+        self.__subjectGroup.processSubjectGroup(self.subpaths)
+
+        refs = self.__subjectGroup.batchData.loc['REF_GROUP']
+        self.assertAlmostEqual(refs["GPS"], 0.55)
+
+        sub1 = self.__subjectGroup.batchData.loc['SUB_1']
+        self.assertAlmostEqual(sub1["GPS"], 1.075)
+        return
+
 if __name__=="__main__":
     unittest.main()

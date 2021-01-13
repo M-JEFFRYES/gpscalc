@@ -8,7 +8,7 @@ setup(
     author='Michael Jeffryes',
     author_email='mike.jeffryes@hotmail.com',
     url='',
-    version='0.0.3',
+    version='0.0.4',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
     py_modules=["gpscalculator",],
@@ -19,7 +19,10 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
     ],
+    #test_suite='tests'
     install_requires=requirements,
     long_description=open('README.md').read(),
 )
 
+# python setupy.py sdist bdist_wheel
+# twine upload dist/* --skip-existing

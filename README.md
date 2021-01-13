@@ -35,7 +35,7 @@ subjectGPS = calculateGPS(referenceKinematics, subjectKinematics).gps
 
 from gpscalculator import plotGPS
 
-plot = pltoGPS(referenceGPS, subjectGPS, saveplot="test_gps_plot.png") 
+plot = plotGPS(referenceGPS, subjectGPS, saveplot="test_gps_plot.png") 
 
 
 ## Batch process a subject group

@@ -4,9 +4,31 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def loadKinematicsJSON(path):
+    """
+    Retuns the kinematics that were stored in a JSON file.
+    :param path: The path (absolute or relative) to the JSON file containin the trial kinematic data
+    :type path: str
+
+    :return kinematics: The kinematic data required to calculate the GPS and MAP
+    :type kinematics: dict
+    """
+    with open(path,'rb') as f:
+        kinematics = json.load(f)
+
+    return kinematics
 
 class calculateGPS:
+    """Calculate the GPS using the reference and subject kinematics dictionaries."""
     def __init__(self, referenceKinematics: dict, subjectKinematics: dict):
+        """Constructor method
+
+        :param referenceKinematics: Average kinematic variables for a reference group.
+        :type referenceKinematics: dict
+
+        :param subjectKinematics: Kinematic variables for a single subject.
+        :type subjectKinematics: dict
+        """
 
         self.refKins = referenceKinematics
         self.subKins = subjectKinematics
@@ -15,8 +37,18 @@ class calculateGPS:
         self.calculateGPS()
         return
 
-    def RMS(self, reference, subject):
+    def RMS(self, reference: list, subject: list):
         """
+        Returns the root mean square of the two input lists
+
+        :param reference: A list of values for a single kinematic variable from the reference dataset.
+        :type reference: list
+
+        :param subject: A list of values for a single kinematic variable from the subject dataset.
+        :type subject: list
+
+        :return rms: Root mean square of the subject kinematic variable relative to the reference group
+        :type rms: float
         """ 
         ref = np.array(reference)
         sub = np.array(subject)
@@ -26,6 +58,9 @@ class calculateGPS:
 
     def calculateGPS(self):
         """
+        Calculates the GPS variable scores storing in a dictionary
+        :return gps: A dictionary containing the GPS variables for the 
+        :type gps: dict
         """
         l_var,  r_var, var = [], [], []
         for key, value in self.refKins.items():
@@ -79,9 +114,8 @@ class refernceGroup:
             return False
 
     def loadKinematics(self, jsonPath: str):
-        with open(jsonPath,'rb') as f:
-            kinematics = json.load(f)
         
+        kinematics = loadKinematicsJSON(jsonPath)
         if self.checkInputKins(kinematics):
             return kinematics
         else:
@@ -226,7 +260,7 @@ class batchGPS:
         'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left', 
         'Hip Abduction Right', 'Pelvic Rotation Left', 'Pelvic Rotation Right', 
         'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 
-        'Foot Progression Right', 'GPSRight', 'GPS Left', 'GPS']
+        'Foot Progression Right', 'GPS Right', 'GPS Left', 'GPS']
 
         self.batchData = pd.DataFrame(data=None, columns=self.variables)
         return
@@ -251,7 +285,7 @@ class batchGPS:
         'Hip Rotation Right':self.referenceGPS['Hip Rotation'], 
         'Foot Progression Left':self.referenceGPS['Foot Progression'], 
         'Foot Progression Right':self.referenceGPS['Foot Progression'], 
-        'GPSRight':self.referenceGPS['GPS'], 
+        'GPS Right':self.referenceGPS['GPS'], 
         'GPS Left':self.referenceGPS['GPS'], 
         'GPS':self.referenceGPS['GPS']
         }
@@ -274,46 +308,9 @@ class batchGPS:
                 inputReferences.append("SUB_{}".format(i+1))
 
         for index, path in enumerate(inputPaths):
-
-            with open(path,'rb') as f:
-                subjectKins = json.load(f)
+            subjectKins = loadKinematicsJSON(path)
             gps = calculateGPS(self.referenceAvgKins, subjectKins).gps
 
             self.batchData.loc[inputReferences[index]] = gps
 
-        return 
-
-
-##################
-
-def test():
-
-    refpath = "..\\tests\\exampledata\\reference"
-    refkinematics = []
-    for filename in os.listdir(refpath):
-        if ".json" in filename:
-            refkinematics.append(os.path.join(refpath, filename))
-    
-    subpath = "..\\tests\\exampledata\\subject"
-    subkinematics = []
-    for filename in os.listdir(subpath):
-        if ".json" in filename:
-            subkinematics.append(os.path.join(subpath, filename))
-
-    x = refernceGroup()
-    x.processGroupData(refkinematics)
-
-    with open(subkinematics[0],'rb') as f:
-        subKins = json.load(f)
-
-    sub = calculateGPS(x.avgKinematics,subKins).gps
-
-    p = plotGPS(x.avgRefGPS, sub, subjectname="test", saveplot="..\\tests\\testplots\\test_gps.png")
-
-    b = batchGPS()
-    b.loadReferenceGroup(refkinematics)
-    b.processSubjectGroup(subkinematics)
-
-    return
-
-#test()
+        return
