@@ -3,16 +3,12 @@ from setuptools import setup
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-def readme():
-    with open("docs/source/index.rst") as f:
-        return f.read()
-
 setup(
     name='gait-profile-score',
     author='Michael Jeffryes',
     author_email='mike.jeffryes@hotmail.com',
     url='',
-    version='0.0.4',
+    version='0.0.5',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
     py_modules=["gpscalculator",],
@@ -25,7 +21,7 @@ setup(
     ],
     #test_suite='tests'
     install_requires=requirements,
-    long_description=readme(),#open('README.md').read(),
+    long_description=open('README.md', encoding="utf8").read(),
 )
 
 # python setupy.py sdist bdist_wheel
