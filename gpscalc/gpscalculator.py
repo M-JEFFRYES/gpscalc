@@ -13,9 +13,13 @@ def loadKinematicsJSON(path):
     :return kinematics: The kinematic data required to calculate the GPS and MAP
     :type kinematics: dict
     """
-    with open(path,'rb') as f:
-        kinematics = json.load(f)
-
+    try:
+        with open(path,'rb') as f:
+            kinematics = json.load(f)
+    except:
+        #raise Exception("Unable to load kinematics from: {}".format(path))
+        print("Unable to load kinematics from: {}".format(path))
+        kinematics = 0
     return kinematics
 
 class calculateGPS:
@@ -79,7 +83,7 @@ class calculateGPS:
         self.gps["GPS"] = np.mean(var)
         return
     
-class refernceGroup:
+class referenceGroup:
     """Calculates the average kinematics and the average GPS score for the kinemtic data for a reference group"""
 
     def __init__(self):
@@ -374,7 +378,7 @@ class batchGPS:
         :type inputPaths: list
         """
 
-        refGroup = refernceGroup()
+        refGroup = referenceGroup()
         refGroup.processGroupData(inputPaths)
         self.referenceAvgKins = refGroup.avgKinematics
         self.referenceGPS = refGroup.avgRefGPS
@@ -397,9 +401,11 @@ class batchGPS:
                 inputReferences.append("SUB_{}".format(i+1))
 
         for index, path in enumerate(inputPaths):
+            
             subjectKins = loadKinematicsJSON(path)
-            gps = calculateGPS(self.referenceAvgKins, subjectKins).gps
-
-            self.batchData.loc[inputReferences[index]] = gps
-
+            if type(subjectKins)==dict: 
+                gps = calculateGPS(self.referenceAvgKins, subjectKins).gps
+                self.batchData.loc[inputReferences[index]] = gps
+            else:
+                pass
         return

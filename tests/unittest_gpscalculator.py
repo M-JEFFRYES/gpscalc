@@ -3,7 +3,7 @@ testdir = os.path.dirname(__file__)
 srcdir = '../gpscalc'
 sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
 
-from gpscalculator import loadKinematicsJSON, calculateGPS, refernceGroup, plotGPS, batchGPS
+from gpscalculator import loadKinematicsJSON, calculateGPS, referenceGroup, plotGPS, batchGPS
 from unittest_config import referenceDataDirectory, subjectDataDirectory
 
 import unittest
@@ -60,7 +60,7 @@ class referenceGroupTest(unittest.TestCase):
             self.refpaths.append(os.path.join(self.refdirpath, path))
 
     def test_referenceGroup(self):
-        self.__referenceGroup = refernceGroup()
+        self.__referenceGroup = referenceGroup()
         self.__referenceGroup.processGroupData(self.refpaths)
 
         self.assertAlmostEqual(self.__referenceGroup.avgRefGPS["GPS"], 0.55,)
@@ -79,7 +79,7 @@ class plotGPSTest(unittest.TestCase):
         for path in os.listdir(self.subdirpath):
             self.subpaths.append(os.path.join(self.subdirpath, path))
 
-        self.referenceGroup = refernceGroup()
+        self.referenceGroup = referenceGroup()
         self.referenceGroup.processGroupData(self.refpaths)
         self.__referenceGPS = self.referenceGroup.avgRefGPS
 
