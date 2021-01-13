@@ -80,12 +80,19 @@ class calculateGPS:
         return
     
 class refernceGroup:
+    """Calculates the average kinematics and the average GPS score for the kinemtic data for a reference group"""
 
     def __init__(self):
+        """Constructor method
+        """
+
         self.initInputDatasets()
         return
     
     def initInputDatasets(self):
+        """
+        Creates an empty dictionary ready for the reference group kinematimatics to be added.
+        """
         self.variables = ['Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 
         'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 
         'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 
@@ -97,7 +104,15 @@ class refernceGroup:
         self.inputKinematics = []
         return
 
-    def checkInputKins(self, inputKins: dict):
+    def checkInputKins(self, inputKins):
+        """
+        Checks the input kinematics dictionary to ensure the data input is suitable for the GPS calculation.
+        :param inputKins: The input kinematics for a given trial.
+        :type inputKins: dict
+
+        :return result: A boolean value to confirm if the input data is suitable
+        :type result: bool
+        """
         checksum = 0 
         keys = list(inputKins.keys())
 
@@ -113,7 +128,16 @@ class refernceGroup:
         else:
             return False
 
-    def loadKinematics(self, jsonPath: str):
+    def loadKinematics(self, jsonPath):
+        """
+        Loads and checks the data store within the json file located by the path provided.
+
+        :param jsonPath: A string path to the json file that stores the kinematic data
+        :type jsonPath: str
+
+        :return kinematics: Kinematic data from the json file
+        :type kinematics: dict
+        """
         
         kinematics = loadKinematicsJSON(jsonPath)
         if self.checkInputKins(kinematics):
@@ -122,21 +146,35 @@ class refernceGroup:
             print("Check input data from: {}".format(jsonPath))
             return 0
 
-    def addInputKinematics(self, jsonPath: dict):
-        self.inputKinematics.append(self.loadKinematics(jsonPath))
-        return
+    def loadInputDataFromList(self, inputPaths):
+        """
+        Adds the kinematic data from json files using the list input.
 
-    def loadInputDataFromList(self, inputPaths: list):
+        :param inputPaths: List of paths for json files that contain kineamtic data
+        :type inputPaths: list
+        """
         for path in inputPaths:
-            self.addInputKinematics(path)
+            self.inputKinematics.append(self.loadKinematics(path))
         return
     
-    def averageVariable(self, groupKinematics: list):
+    def averageVariable(self, groupKinematics):
+        """
+        Averages the reference group kinematic data for a gait variable.
+
+        :param groupKinematics: A list of kinematic arrays from the reference group for a single kinematic variable
+        :type groupKinematics: list
+
+        :return avg: The average value for a kineamtic variabble throughout the gait cycle
+        :type avg: list
+        """
         data = np.array(groupKinematics)
         avg = np.mean(np.array(data), axis=0)
         return avg
 
     def calculateAverageKinematics(self):
+        """
+        Calculates the averages for the gait variables, storing the average kinematic lists to a single dictionary.
+        """
         self.avgKinematics = {}
         for var in self.variables:
             varData = []
@@ -147,6 +185,9 @@ class refernceGroup:
         return
 
     def calculateGroupGPS(self):
+        """
+        Calculates the GPS scores for each set of reference kinematics relative to the reference group.
+        """
         cols = self.variables
         cols.append("GPS Left")
         cols.append("GPS Right")
@@ -158,6 +199,9 @@ class refernceGroup:
         return 
 
     def averageReferenceGPS(self):
+        """
+        Calculates the average GPS score for the reference group, storing the average values in the avgRefGPS dictionary.
+        """
         avgRef={}
 
         for col in self.groupGPS:
@@ -175,7 +219,13 @@ class refernceGroup:
             self.avgRefGPS[key] = (avgRef[left] +avgRef[right] )/2
         return
 
-    def processGroupData(self, inputPaths: list):
+    def processGroupData(self, inputPaths):
+        """
+        Calculates the average set of kinematics and the average GPS scores for the reference group.
+
+        :param inputPaths: List of paths for json files that contain kineamtic data
+        :type inputPaths: list  
+        """
 
         self.loadInputDataFromList(inputPaths)
         self.calculateAverageKinematics()
@@ -184,8 +234,23 @@ class refernceGroup:
         return
 
 class plotGPS:
+    """Plots the GPS and MAP for kinematics input relative to a reference group"""
 
-    def __init__(self, referenceGPS: dict, subjectGPS: dict , subjectname=None, saveplot=None):
+    def __init__(self, referenceGPS, subjectGPS, subjectname=None, saveplot=None):
+        """Contstructor method
+
+        :param referenceGPS: The average GPS scores for a reference group.
+        :type referenceGPS: dict
+
+        :param subjectGPS: The GPS scores for a set of kinematics relative to the reference group.
+        :type subjectGPS: dict
+
+        :param subjectname: Name or reference for the subject
+        :type subjectname: str
+
+        :param saveplot: Desired file path for the plot to be saved to.
+        :type saveplot: str
+        """
         self.ref = referenceGPS
         self.subject = subjectGPS
 
@@ -201,12 +266,16 @@ class plotGPS:
         return
 
     def separateVariables(self):
+        """Grouping of the kinematic variables, to enable plotting of the left/right/overall."""
+
         self.left_vars = [self.subject['Pelvic Tilt Left'], self.subject['Hip Flexion Left'], self.subject['Knee Flexion Left'], self.subject['Ankle Dorsiflexion Left'], self.subject['Pelvic Obliquity Left'], self.subject['Hip Abduction Left'], self.subject['Pelvic Rotation Left'], self.subject['Hip Rotation Left'], self.subject['Foot Progression Left'], 0, self.subject['GPS Left']]
         self.right_vars = [self.subject['Pelvic Tilt Right'], self.subject['Hip Flexion Right'], self.subject['Knee Flexion Right'], self.subject['Ankle Dorsiflexion Right'], self.subject['Pelvic Obliquity Right'], self.subject['Hip Abduction Right'], self.subject['Pelvic Rotation Right'], self.subject['Hip Rotation Right'], self.subject['Foot Progression Right'], 0, self.subject['GPS Right']]
         self.ref_vars =  [self.ref['Pelvic Tilt'], self.ref['Hip Flexion'], self.ref['Knee Flexion'], self.ref['Ankle Dorsiflexion'], self.ref['Pelvic Obliquity'], self.ref['Hip Abduction'], self.ref['Pelvic Rotation'], self.ref['Hip Rotation'], self.ref['Foot Progression'], 0, self.ref['GPS']]
         return
     
     def calculateBars(self):
+        """Calculation of points required to plot the bars for the GPS diagram. """
+
         # First number sets the width of the left/right bars
         self.width = 0.35
         self.ref_widths, self.widths, self.pos_l, self.pos_r = [], [] , [], []
@@ -230,6 +299,7 @@ class plotGPS:
         return   
 
     def plot(self):
+        """Plotting of the GPS diagram."""
 
         ticks = ['Pel tilt', 'Hip flex', 'Knee flex', 'Ank dors', 'Pel obl', 'Hip abd', 'Pel rot', 'Hip rot', 'Foot prog', None,  'GPS']
 
@@ -253,7 +323,11 @@ class plotGPS:
         return
     
 class batchGPS:
+    """A class to calculate the GPS scores for a group of subjects relative to a reference group."""
+
     def __init__(self):
+        """Constructor Method"""
+
         self.variables = ['Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 
         'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 
         'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 
@@ -266,6 +340,7 @@ class batchGPS:
         return
 
     def addRefGroup(self):
+        """Adding the reference group data to the dataframe containin the GPS data for the subject group that is to be processed"""
 
         refdata = {'Pelvic Tilt Left':self.referenceGPS['Pelvic Tilt'], 
         'Pelvic Tilt Right':self.referenceGPS['Pelvic Tilt'], 
@@ -293,6 +368,12 @@ class batchGPS:
         return
 
     def loadReferenceGroup(self, inputPaths):
+        """Loads the reference group average kinematics and average GPS scores, adding the average GPS scores to the dataframe storing subject group GPS scores.
+
+        :param inputPaths: List of paths for json files that contain kineamtic data
+        :type inputPaths: list
+        """
+
         refGroup = refernceGroup()
         refGroup.processGroupData(inputPaths)
         self.referenceAvgKins = refGroup.avgKinematics
@@ -300,7 +381,15 @@ class batchGPS:
         self.addRefGroup()
         return 
     
-    def processSubjectGroup(self, inputPaths: list, inputReferences=None):
+    def processSubjectGroup(self, inputPaths, inputReferences=None):
+        """Calculates and stores the GPS scores for the subject group in a dataframe.
+
+        :param inputPaths: List of paths for json files that contain kineamtic data
+        :type inputPaths: list
+
+        :param inputReferences: A list of reference strs to use for the subjects being processed, if not provided then the default "SUB_1,SUB_2,.." will be used.
+        :type inputReferences: list
+        """
 
         if inputReferences==None:
             inputReferences=[]
