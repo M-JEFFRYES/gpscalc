@@ -394,6 +394,7 @@ class batchGPS:
         :param inputReferences: A list of reference strs to use for the subjects being processed, if not provided then the default "SUB_1,SUB_2,.." will be used.
         :type inputReferences: list
         """
+        self.missing = []
 
         if inputReferences==None:
             inputReferences=[]
@@ -407,5 +408,6 @@ class batchGPS:
                 gps = calculateGPS(self.referenceAvgKins, subjectKins).gps
                 self.batchData.loc[inputReferences[index]] = gps
             else:
+                self.missing.append(path)
                 pass
         return
