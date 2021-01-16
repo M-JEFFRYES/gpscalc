@@ -88,7 +88,7 @@ class referenceGroupTest(unittest.TestCase):
         self.__referenceGroup = referenceGroup()
         self.__referenceGroup.processGroupData(self.refpaths)
 
-        errMSG = "Incorrect calculated average GPS variable"
+        #errMSG = "Incorrect calculated average GPS variable"
         self.assertAlmostEqual(self.__referenceGroup.avgRefGPS["GPS"], 0.55)#,errMSG)
 
         #errMSG = "Incorrect calculated average kinematics variable "

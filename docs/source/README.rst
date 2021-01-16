@@ -19,6 +19,26 @@ Package Installation
 
     pip install gait-profile-score
 
+Create example data in correct format
+---------------------------------------
+
+::
+
+    from gpscalculator import exampleDataInput
+
+    exampleData = exampleDataInput()
+
+    # Kinematic variable labels required
+    labels = exampleData.kinematicVariables()
+    print(labels)
+
+    # Example of a kinematic dataset
+    dataset = exampleData.kinematics()
+    print(dataset)
+
+    # Save an example of the kinematics JSON file required
+    exampleData.kinematicsJSON("chosen/directory")
+
 Processing the reference group data
 -----------------------------------
 

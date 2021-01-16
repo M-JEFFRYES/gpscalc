@@ -9,7 +9,7 @@ def my_test_suite():
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-with open('README.md') as f:
+with open('README.rst') as f:
     readme = f.read()
 
 setup(
@@ -17,7 +17,7 @@ setup(
     author='Michael Jeffryes',
     author_email='mike.jeffryes@hotmail.com',
     url='',
-    version='0.0.5',
+    version='1.0.0',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
     py_modules=["gpscalculator",],
