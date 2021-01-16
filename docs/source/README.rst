@@ -1,9 +1,6 @@
 Welcome to Gait Profile Score Calculator’s documentation!
 =========================================================
 
-How to use the GPS Calculator
-=============================
-
 **gpscalc** is a package that can be used to calculate the gait profile
 score as stated in Baker et al. 2009. The package requires the gait
 trials kinematic data to be stored in a json file using specific
@@ -13,6 +10,8 @@ Kinematic gait data has to be in a specific format for the calculation,
 the specifics of the format required can be seen using the functions
 below to create example JSON files.
 
+How to use the GPS Calculator
+=============================
 Package Installation
 --------------------
 
