@@ -3,6 +3,63 @@ import os
 import numpy as np 
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.signal import resample 
+
+
+class exampleInputData:
+    def __init__(self):
+        return
+    
+    def kinematicVariables(self):
+        """
+        Returns a list of the kinematic variables required to calculate the GPS for a gait trial.
+
+        :return kinematicVariables: List of the kinematic variables required to calculate the GPS for a gait trial
+        :type kinematicVariables: list
+        """
+        kinematicVariables = ['Pelvic Tilt Left', 'Pelvic Tilt Right', 'Hip Flexion Left', 
+            'Hip Flexion Right', 'Knee Flexion Left', 'Knee Flexion Right', 
+            'Ankle Dorsiflexion Left', 'Ankle Dorsiflexion Right', 
+            'Pelvic Obliquity Left', 'Pelvic Obliquity Right', 'Hip Abduction Left', 
+            'Hip Abduction Right', 'Pelvic Rotation Left', 'Pelvic Rotation Right', 
+            'Hip Rotation Left', 'Hip Rotation Right', 'Foot Progression Left', 
+            'Foot Progression Right']
+
+        return kinematicVariables
+
+    def kinematics(self):
+        """
+        Returns a dictionary to illustrate the structure of the kinematics required (not real kinematic data, just sin waves)
+        
+        :return kinematics: A dictionary with the set of variables required in the correct format.
+        :type kinematics: dict
+        """
+
+        values = list(resample(np.sin(range(0,360)), 51))
+
+        kinematicVariables = self.kinematicVariables()
+
+        kinematics = {}
+        for key in kinematicVariables:
+            kinematics[key] = values
+        return kinematics
+
+    def kinematicsJSON(self, directory=None):
+        """
+        Creates an example kinematics file in the format required for the GPS calculator.
+
+        :param directory: A path to the directory where the example file is to be saved, if left blank it will save in the current working directory
+        :type directory: str
+        """
+        kinematics = self.kinematics()
+
+        if directory != None:
+            path = os.path.join(directory,"example_kinematics.json")
+        else:
+            path = "example_kinematics.json"
+        with open(path, 'w') as f:
+            json.dump(kinematics, f)
+        return
 
 def loadKinematicsJSON(path):
     """

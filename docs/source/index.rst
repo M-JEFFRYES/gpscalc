@@ -11,7 +11,9 @@ Welcome to Gait Profile Score Calculator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Readme <../../README.md>
+   README <README.rst>
+   
+   
 
 
 Package function and class dictionary

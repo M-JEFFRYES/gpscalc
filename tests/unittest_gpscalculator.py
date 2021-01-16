@@ -3,10 +3,29 @@ testdir = os.path.dirname(__file__)
 srcdir = '../gpscalc'
 sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
 
-from gpscalculator import loadKinematicsJSON, calculateGPS, referenceGroup, plotGPS, batchGPS
-from unittest_config import referenceDataDirectory, subjectDataDirectory
+from gpscalculator import loadKinematicsJSON, calculateGPS, referenceGroup, plotGPS, batchGPS, exampleInputData
+
+from config import referenceDataDirectory, subjectDataDirectory
 
 import unittest
+
+class exampleInputDataTest(unittest.TestCase):
+    def setUp(self):
+        self.example = exampleInputData()
+
+        return
+    
+    def test_kinematicVariables(self):
+        self.example.kinematicVariables()
+        return
+    def test_kinematics(self):
+        self.example.kinematics()
+        return
+    def test_kinematicsJSON(self):
+        self.example.kinematicsJSON("tests\\exampledata\\")
+        return
+
+
 
 class loadKinematicsJSONTest(unittest.TestCase):
     def setUp(self):
@@ -41,15 +60,21 @@ class calculateGPSTest(unittest.TestCase):
 
     def test_calculateGPS(self):
         self.__calculator = calculateGPS(self.referenceKinematics, self.subjectKinematics)
-        self.assertEqual(self.__calculator.gps[self.variables[0]], 5)
-        self.assertEqual(self.__calculator.gps["GPS"], 5)
-        self.assertEqual(self.__calculator.gps["GPS Left"], 5)
-        self.assertEqual(self.__calculator.gps["GPS Right"], 5)
+
+        errMSG = "Incorrect GPS variable value calculated"
+
+        self.assertEqual(self.__calculator.gps[self.variables[0]], 5, errMSG)
+        self.assertEqual(self.__calculator.gps["GPS"], 5, errMSG)
+        self.assertEqual(self.__calculator.gps["GPS Left"], 5, errMSG)
+        self.assertEqual(self.__calculator.gps["GPS Right"], 5, errMSG)
     
     def test_RMS(self):
         self.__calculator = calculateGPS(self.referenceKinematics, self.subjectKinematics)
         self.__RMS = self.__calculator.RMS([10]*20, [20]*20)
-        self.assertEqual(self.__RMS, 10)
+
+        errMSG = "Incorrect RMS value calculated"
+
+        self.assertEqual(self.__RMS, 10, errMSG)
     
 class referenceGroupTest(unittest.TestCase):
     def setUp(self):
@@ -63,8 +88,11 @@ class referenceGroupTest(unittest.TestCase):
         self.__referenceGroup = referenceGroup()
         self.__referenceGroup.processGroupData(self.refpaths)
 
-        self.assertAlmostEqual(self.__referenceGroup.avgRefGPS["GPS"], 0.55,)
-        self.assertAlmostEqual(self.__referenceGroup.avgKinematics["Pelvic Tilt Left"][0], 5.075)
+        errMSG = "Incorrect calculated average GPS variable"
+        self.assertAlmostEqual(self.__referenceGroup.avgRefGPS["GPS"], 0.55)#,errMSG)
+
+        #errMSG = "Incorrect calculated average kinematics variable "
+        self.assertAlmostEqual(self.__referenceGroup.avgKinematics["Pelvic Tilt Left"][0], 5.075)#, errMSG)
 
 class plotGPSTest(unittest.TestCase):
     def setUp(self):
@@ -87,7 +115,7 @@ class plotGPSTest(unittest.TestCase):
         self.__subjectGPS = calculateGPS(self.referenceGroup.avgKinematics, self.subjectKinematics).gps
 
     def test_plotGPS(self):
-        self.__plot = plotGPS(self.__referenceGPS, self.__subjectGPS, saveplot="tests\\testplots\\unittest_gps_plot.png") 
+        self.__plot = plotGPS(self.__referenceGPS, self.__subjectGPS, saveplot="tests\\exampledata\\unittest_gps_plot.png") 
         return
     
 class batchGPSTest(unittest.TestCase):
@@ -109,10 +137,12 @@ class batchGPSTest(unittest.TestCase):
         self.__subjectGroup.processSubjectGroup(self.subpaths)
 
         refs = self.__subjectGroup.batchData.loc['REF_GROUP']
-        self.assertAlmostEqual(refs["GPS"], 0.55)
+        #errMSG = "Incorrect calculated reference GPS value"
+        self.assertAlmostEqual(refs["GPS"], 0.55)#, errMSG)
 
         sub1 = self.__subjectGroup.batchData.loc['SUB_1']
-        self.assertAlmostEqual(sub1["GPS"], 1.075)
+        #errMSG = "Incorrect calculated GPS value for first subject"
+        self.assertAlmostEqual(sub1["GPS"], 1.075)#, errMSG)
         return
 
 if __name__=="__main__":
