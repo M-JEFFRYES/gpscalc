@@ -17,7 +17,7 @@ setup(
     author='Michael Jeffryes',
     author_email='mike.jeffryes@hotmail.com',
     url='',
-    version='1.0.0',
+    version='1.0.1',
     description='Calculates Gait Profile Score',
     #packages=['gpscalc'],
     py_modules=["gpscalculator",],
