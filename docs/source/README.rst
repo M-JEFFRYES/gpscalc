@@ -24,9 +24,9 @@ Create example data in correct format
 
 ::
 
-    from gpscalculator import exampleDataInput
+    from gpscalculator import exampleInputData
 
-    exampleData = exampleDataInput()
+    exampleData = exampleInputData()
 
     # Kinematic variable labels required
     labels = exampleData.kinematicVariables()
@@ -35,7 +35,7 @@ Create example data in correct format
     # Example of a kinematic dataset
     dataset = exampleData.kinematics()
     print(dataset)
-
+    
     # Save an example of the kinematics JSON file required
     exampleData.kinematicsJSON("chosen/directory")
 
@@ -49,7 +49,7 @@ Processing the reference group data
     # List of paths to the reference group kinematics JSON files
     referencePaths = [...]
 
-    referenceData = refernceGroupKinematics()
+    referenceData = refernceGroup()
     referenceData.processGroupData(referencePaths)
 
     # The average of the reference kinematic variables over the gait cycle
